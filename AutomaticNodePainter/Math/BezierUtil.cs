@@ -1,54 +1,13 @@
 
-namespace AutomaticNodePainter.Util {
+namespace AutomaticNodePainter.Math {
     using ColossalFramework.Math;
     using UnityEngine;
     using static MathUtil;
-
-    public static class LineUtil {
-        public static bool IntersectLine(Vector2 A, Vector2 B, Vector2 C, Vector2 D, out Vector2 center) {
-            // Line AB represented as a1x + b1y = c1 
-            float a1 = B.y - A.y;
-            float b1 = A.x - B.x;
-            float c1 = a1 * (A.x) + b1 * (A.y);
-
-            // Line CD represented as a2x + b2y = c2 
-            float a2 = D.y - C.y;
-            float b2 = C.x - D.x;
-            float c2 = a2 * (C.x) + b2 * (C.y);
-
-            float determinant = a1 * b2 - a2 * b1; // TODO VectorUtil.Determinent(A,B);
-
-            if (EqualAprox(determinant, 0)) {
-                // The lines are parallel. This is simplified 
-                center = Vector2.zero;
-                return false;
-            } else {
-                center.x = (b2 * c1 - b1 * c2) / determinant;
-                center.y = (a1 * c2 - a2 * c1) / determinant;
-                return true;
-            }
-        }
-        public static bool Intersect(Vector2 point1, Vector2 dir1, Vector2 point2, Vector2 dir2, out Vector2 center) {
-            return IntersectLine(
-                point1, point1 + dir1,
-                point2, point2 + dir2,
-                out center);
-        }
-
-        public static Vector3 GetClosestPoint(Vector3 A, Vector3 B, Vector3 P) {
-            var AP = P - A;
-            var AB = B - A;
-            var dot = Vector3.Dot(AP, AB);
-            var t = dot / AB.sqrMagnitude; // The normalized "distance" from a to  your closest point
-            return A + AB * t;
-        }
-    }
 
     public static class BezierUtil {
         public static string STR(this Bezier2 bezier) {
             return $"Bezier2(" + bezier.a + ", " + bezier.b + ", " + bezier.c + ", " + bezier.d + ")";
         }
-
 
         public static float ArcLength(this Bezier3 beizer, float step = 0.1f) {
             float ret = 0;
@@ -211,51 +170,11 @@ namespace AutomaticNodePainter.Util {
 
         public static Bezier3 TOCSBezier3(this Bezier2 bezier) {
             return new Bezier3 {
-                a = Shapes.NodeWrapper.Get3DPos(bezier.a, 0),
-                b = Shapes.NodeWrapper.Get3DPos(bezier.b, 0),
-                c = Shapes.NodeWrapper.Get3DPos(bezier.c, 0),
-                d = Shapes.NodeWrapper.Get3DPos(bezier.d, 0),
+                a = Shapes.NodeWrapper.Get3DPos(bezier.a),
+                b = Shapes.NodeWrapper.Get3DPos(bezier.b),
+                c = Shapes.NodeWrapper.Get3DPos(bezier.c),
+                d = Shapes.NodeWrapper.Get3DPos(bezier.d),
             };
         }
-
     }
-
-    // start dir and end dir are pointing inwards.
-    public struct CubicBezier3 {
-        public PointDir3 Start;
-        public PointDir3 End;
-
-        public CubicBezier3(PointDir3 start, PointDir3 end) {
-            Start = start;
-            End = end;
-        }
-
-        // result points on the path toward the end point.
-        public PointDir3 GetCenterPointAndDir() {
-            var point1 = LineUtil.GetClosestPoint(Start.Point, Start.Point + Start.Dir, End.Point);
-            var point2 = LineUtil.GetClosestPoint(End.Point, End.Point + End.Dir, Start.Point);
-
-            point1 = point1 * 0.25f + Start.Point * 0.75f; // lerp
-            point2 = point2 * 0.25f + End.Point * 0.75f; // lerp
-
-            PointDir3 ret = new PointDir3 {
-                Point = (point1+point2)*0.5f,
-                Dir = (point2-point1).normalized,
-            };
-            return ret;
-        }
-    }
-
-    public struct PointDir3 {
-        public Vector3 Point;
-        public Vector3 Dir;
-        public PointDir3(Vector3 point, Vector3 dir) {
-            Point = point;
-            Dir = dir;
-        }
-        public PointDir3 Reverse => new PointDir3(Point, -Dir);
-    }
-
-
-
 }

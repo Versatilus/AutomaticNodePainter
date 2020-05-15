@@ -1,11 +1,6 @@
-using ColossalFramework;
 using ColossalFramework.UI;
 using UnityEngine;
-using System;
-
-using static AutomaticNodePainter.Util.HelpersExtensions;
 using AutomaticNodePainter.Util;
-using ColossalFramework.Math;
 
 namespace AutomaticNodePainter.Tool {
     public abstract class KianToolBase : DefaultTool
@@ -148,7 +143,7 @@ namespace AutomaticNodePainter.Tool {
         static float GetAgnele(Vector3 v1, Vector3 v2) {
             float ret = Vector3.Angle(v1, v2);
             if (ret > 180) ret -= 180; //future proofing
-            ret = Math.Abs(ret);
+            ret = UnityEngine.Mathf.Abs(ret);
             return ret;
         }
 

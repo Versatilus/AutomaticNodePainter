@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using AutomaticNodePainter.Math;
 
 namespace AutomaticNodePainter.Util {
     public class NetServiceException : Exception {

@@ -1,41 +1,28 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-
 namespace AutomaticNodePainter.Util {
+    using TrafficManager.Manager.Impl;
     public static class TMPEUtil {
-        public static bool Active = true;
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        public static bool _SetPedestrianCrossingAllowed(ushort segmentId, bool startNode, bool value) {
-            return TrafficManager.Manager.Impl.JunctionRestrictionsManager.Instance.
-                SetPedestrianCrossingAllowed(segmentId, startNode, false);
+        public static int CountTargetConnections(LaneData sourceLane, LaneData[] TargetLanes) {
+            int ret = 0;
+            foreach (var targetLane in TargetLanes) {
+                if (LaneConnectionManager.Instance.AreLanesConnected(
+                    sourceLaneId: sourceLane.LaneID,
+                    targetLaneId: targetLane.LaneID,
+                    sourceStartNode: sourceLane.StartNode))
+                    ret++;
+            }
+            return ret;
         }
 
-        public static bool SetPedestrianCrossingAllowed(ushort segmentId, bool startNode, bool value) {
-            if (!Active)
-                return false;
-            try {
-                return _SetPedestrianCrossingAllowed(segmentId, startNode, value);
-            } catch { }
-
-            Log.Info("TMPE not found!");
-            Active = false;
-            return false;
-        }
-
-        public static void BanPedestrianCrossings(ushort segmentId, ushort nodeId) {
-            Log.Debug($"BanPedestrianCrossings({segmentId},{nodeId})");
-
-            bool startNode = segmentId.ToSegment().m_startNode == nodeId;
-            bool res = SetPedestrianCrossingAllowed(segmentId, startNode, false);
-#if DEBUG
-            if(Active && !res)
-                Log.Info("BanPedestrianCrossings failed");
-#endif
+        public static int CountSourceConnections(LaneData targetLane, LaneData[] sourceLanes) {
+            int ret = 0;
+            foreach (var sourceLane in sourceLanes) {
+                if (LaneConnectionManager.Instance.AreLanesConnected(
+                    sourceLaneId: sourceLane.LaneID,
+                    targetLaneId: targetLane.LaneID,
+                    sourceStartNode: sourceLane.StartNode))
+                    ret++;
+            }
+            return ret;
         }
     }
 }

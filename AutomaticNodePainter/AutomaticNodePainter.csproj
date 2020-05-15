@@ -77,7 +77,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomaticNodePainterMod.cs" />
-    <Compile Include="Shapes\Class1.cs" />
+    <Compile Include="Shapes\Shapes.cs" />
+    <Compile Include="Shapes\LaneMarker.cs" />
     <Compile Include="Shapes\NodeWrapper.cs" />
     <Compile Include="Shapes\SegmentWrapper.cs" />
     <Compile Include="TestsExperiments.cs" />
@@ -87,11 +88,13 @@
     <Compile Include="UI\Helpers\TextureUtil.cs" />
     <Compile Include="UI\Helpers\UIUtils.cs" />
     <Compile Include="UI\AutomaticNodePainterButton.cs" />
+    <Compile Include="Math\CubicBezier3.cs" />
+    <Compile Include="Math\LineUtil.cs" />
+    <Compile Include="Math\PointDir3.cs" />
     <Compile Include="Util\RenderUtil.cs" />
     <Compile Include="Util\GridUtil.cs" />
-    <Compile Include="Util\BezierUtil.cs" />
-    <Compile Include="Util\MathUtil.cs" />
-    <Compile Include="Util\RoundaboutUtil.cs" />
+    <Compile Include="Math\BezierUtil.cs" />
+    <Compile Include="Math\MathUtil.cs" />
     <Compile Include="Util\TMPEUtil.cs" />
     <Compile Include="UI\Helpers\ResourceLoader.cs" />
     <Compile Include="Util\HelpersExtensions.cs" />
@@ -100,7 +103,7 @@
     <Compile Include="Util\NetUtil.cs" />
     <Compile Include="Util\PluginUtil.cs" />
     <Compile Include="Util\PrefabUtil.cs" />
-    <Compile Include="Util\VecetorUtils.cs" />
+    <Compile Include="Math\VecetorUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\sprites.png" />

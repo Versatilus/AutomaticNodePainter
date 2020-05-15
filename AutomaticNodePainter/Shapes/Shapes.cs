@@ -1,10 +1,14 @@
-
 namespace AutomaticNodePainter.Shapes {
-    using AutomaticNodePainter.Util;
-    using ColossalFramework.Math;
+    using System.Linq;
     using System.Collections.Generic;
-    using TrafficManager.Manager.Impl;
+
     using UnityEngine;
+    using ColossalFramework.Math;
+
+    using TrafficManager.Manager.Impl;
+
+    using AutomaticNodePainter.Util;
+    using AutomaticNodePainter.Math;
 
     public struct LaneMarkerPoint {
         public PointDir3 PointDir;
@@ -168,7 +172,7 @@ namespace AutomaticNodePainter.Shapes {
 
             for (int sourceLaneIDX = 0; sourceLaneIDX < Source.Lanes.Length; ++sourceLaneIDX) {
                 int targetLaneIDX = GetInnerMostConnectedTargetLane(Source.Lanes[sourceLaneIDX], Target.Lanes);
-                int count = LaneConnectionUtil.CountSourceConnections(Target.Lanes[targetLaneIDX], Source.Lanes);
+                int count = TMPEUtil.CountSourceConnections(Target.Lanes[targetLaneIDX], Source.Lanes);
                 if (count == 1) {
                     int j1 = Source.GetCorespondingControlPoint(sourceLaneIDX);
                     int j2 = Target.GetCorespondingControlPoint(targetLaneIDX);
@@ -178,7 +182,7 @@ namespace AutomaticNodePainter.Shapes {
 
             for (int targetLaneIDX = 0; targetLaneIDX < Target.Lanes.Length; ++targetLaneIDX) {
                 int sourceLaneIDX = GetInnerMostConnectedSourceLane(Target.Lanes[targetLaneIDX], Source.Lanes);
-                int count = LaneConnectionUtil.CountTargetConnections(Source.Lanes[sourceLaneIDX], Target.Lanes);
+                int count = TMPEUtil.CountTargetConnections(Source.Lanes[sourceLaneIDX], Target.Lanes);
                 if (count == 1) {
                     int j1 = Source.GetCorespondingControlPoint(sourceLaneIDX);
                     int j2 = Target.GetCorespondingControlPoint(targetLaneIDX);
@@ -187,7 +191,6 @@ namespace AutomaticNodePainter.Shapes {
             }
             return connections;
         }
-
 
         public static int GetInnerMostConnectedTargetLane(LaneData sourceLane, LaneData[] targetLanes) {
             for (int i = targetLanes.Length - 1; i >= 0; ++i) {
@@ -237,39 +240,9 @@ namespace AutomaticNodePainter.Shapes {
         }
     }
 
-
-    public class LaneMarker {
-        public CubicBezier3 bezier1;
-        public CubicBezier3 bezier2;
-        public NetInfo Info;
-
-        public NodeWrapper Node1;
-        public SegmentWrapper Segment1;
-        public NodeWrapper MiddleNode;
-        public SegmentWrapper Segment2;
-        public NodeWrapper Node2;
-
-        public LaneMarker(CubicBezier3 bezier1, CubicBezier3 bezier2, NetInfo info) {
-            Node1 = new NodeWrapper(bezier1.Start.Point, 0, info);
-            //HelpersExtensions.AssertEqual(bezier1.End.Point, bezier2.Start.Point);
-            MiddleNode = new NodeWrapper(bezier1.End.Point, 0, info);
-            Node2 = new NodeWrapper(bezier2.End.Point, 0, info);
-            Segment1 = new SegmentWrapper(Node1, MiddleNode, bezier1.Start.Dir, bezier1.End.Dir);
-            Segment2 = new SegmentWrapper(MiddleNode, Node2, bezier2.Start.Dir, bezier2.End.Dir);
-        }
-
-        public void Create() {
-            Node1.Create();
-            MiddleNode.Create();
-            Node2.Create();
-            Segment1.Create();
-            Segment2.Create();
-        }
-    }
-
     public class TransitionMarkers {
         public List<LaneMarker> Markers;
-        public static NetInfo Info;
+        public static NetInfo Info => PrefabUtil.defaultPrefab;
 
         public TransitionMarkers(ushort segmentID1, ushort segmentID2) {
             var Connections = new ConnectionWrapper(segmentID1, segmentID2);
@@ -304,33 +277,25 @@ namespace AutomaticNodePainter.Shapes {
         }
     }
 
-
-    public static class LaneConnectionUtil {
-        public static int CountTargetConnections(LaneData sourceLane, LaneData[] TargetLanes) {
-            int ret = 0;
-            foreach (var targetLane in TargetLanes) {
-                if (LaneConnectionManager.Instance.AreLanesConnected(
-                    sourceLaneId: sourceLane.LaneID,
-                    targetLaneId: targetLane.LaneID,
-                    sourceStartNode: sourceLane.StartNode))
-                    ret++;
+    public class NodePainting {
+        public List<TransitionMarkers> Markers;
+        public ushort NodeID;
+        public NodePainting(ushort nodeID) {
+            NodeID = nodeID;
+            var segments = NetUtil.GetSegmentsCoroutine(nodeID).ToList();
+            Markers = new List<TransitionMarkers>();
+            foreach(ushort segmentID1 in segments) {
+                foreach (ushort segmentID2 in segments) {
+                    if (segmentID1 == segmentID2)
+                        continue;
+                    Markers.Add(new TransitionMarkers(segmentID1, segmentID2));
+                }
             }
-            return ret;
         }
 
-        public static int CountSourceConnections(LaneData targetLane, LaneData[] sourceLanes) {
-            int ret = 0;
-            foreach (var sourceLane in sourceLanes) {
-                if (LaneConnectionManager.Instance.AreLanesConnected(
-                    sourceLaneId: sourceLane.LaneID,
-                    targetLaneId: targetLane.LaneID,
-                    sourceStartNode: sourceLane.StartNode))
-                    ret++;
-            }
-            return ret;
+        public void Create() {
+            foreach (var item in Markers)
+                item.Create();
         }
-
-
     }
-
 }

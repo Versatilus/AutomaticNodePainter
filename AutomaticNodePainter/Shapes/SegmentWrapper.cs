@@ -1,6 +1,7 @@
 using UnityEngine;
 using AutomaticNodePainter.Util;
 using static AutomaticNodePainter.Util.NetUtil;
+using AutomaticNodePainter.Math;
 using System;
 
 namespace AutomaticNodePainter.Shapes {

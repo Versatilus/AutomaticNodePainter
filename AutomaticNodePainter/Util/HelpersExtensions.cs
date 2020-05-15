@@ -6,6 +6,8 @@ namespace AutomaticNodePainter.Util {
     using UnityEngine;
     using ICities;
     using System.Diagnostics;
+    using AutomaticNodePainter.Math;
+
 
     public static class HelpersExtensions
     {

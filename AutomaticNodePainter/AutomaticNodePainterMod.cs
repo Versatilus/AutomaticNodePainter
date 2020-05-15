@@ -25,7 +25,6 @@ namespace AutomaticNodePainter {
 
     public static class LoadTool {
         public static void Load() {
-            TMPEUtil.Active = true;
             Tool.AutomaticNodePainterTool.Create();
         }
         public static void Release() {

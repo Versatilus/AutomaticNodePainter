@@ -5,8 +5,6 @@ using UnityEngine;
 
 namespace AutomaticNodePainter.Util {
     using static NetUtil;
-    using static HelpersExtensions;
-    using static VectorUtil;
     using static GridUtil;
 
     public struct GridVector {
