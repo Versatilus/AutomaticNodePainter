@@ -1,8 +1,7 @@
 
 namespace AutomaticNodePainter.Util {
-    using System;
-    using UnityEngine;
     using ColossalFramework.Math;
+    using UnityEngine;
     using static MathUtil;
 
     public static class LineUtil {
@@ -35,11 +34,19 @@ namespace AutomaticNodePainter.Util {
                 point2, point2 + dir2,
                 out center);
         }
+
+        public static Vector3 GetClosestPoint(Vector3 A, Vector3 B, Vector3 P) {
+            var AP = P - A;
+            var AB = B - A;
+            var dot = Vector3.Dot(AP, AB);
+            var t = dot / AB.sqrMagnitude; // The normalized "distance" from a to  your closest point
+            return A + AB * t;
+        }
     }
 
     public static class BezierUtil {
         public static string STR(this Bezier2 bezier) {
-            return $"Bezier2("+ bezier.a + ", " + bezier.b + ", " + bezier.c + ", " + bezier.d +")";
+            return $"Bezier2(" + bezier.a + ", " + bezier.b + ", " + bezier.c + ", " + bezier.d + ")";
         }
 
 
@@ -84,7 +91,7 @@ namespace AutomaticNodePainter.Util {
             var startDir = (beizer.a - beizer.b).normalized;
             var endDir = (beizer.c - beizer.d).normalized; // c actually gets past d.
             return EqualAprox((startDir + endDir).sqrMagnitude, 0f, Epsilon * Epsilon);
-                //.LogRet($"IsStraight bezier={beizer.STR()} startDir:{startDir} endDir:{endDir} sum={(startDir + endDir)} ret:");
+            //.LogRet($"IsStraight bezier={beizer.STR()} startDir:{startDir} endDir:{endDir} sum={(startDir + endDir)} ret:");
         }
 
         public static float ArcLength(this Bezier2 bezier, float step = 0.1f) {
@@ -210,5 +217,45 @@ namespace AutomaticNodePainter.Util {
                 d = Shapes.NodeWrapper.Get3DPos(bezier.d, 0),
             };
         }
+
     }
+
+    // start dir and end dir are pointing inwards.
+    public struct CubicBezier3 {
+        public PointDir3 Start;
+        public PointDir3 End;
+
+        public CubicBezier3(PointDir3 start, PointDir3 end) {
+            Start = start;
+            End = end;
+        }
+
+        // result points on the path toward the end point.
+        public PointDir3 GetCenterPointAndDir() {
+            var point1 = LineUtil.GetClosestPoint(Start.Point, Start.Point + Start.Dir, End.Point);
+            var point2 = LineUtil.GetClosestPoint(End.Point, End.Point + End.Dir, Start.Point);
+
+            point1 = point1 * 0.25f + Start.Point * 0.75f; // lerp
+            point2 = point2 * 0.25f + End.Point * 0.75f; // lerp
+
+            PointDir3 ret = new PointDir3 {
+                Point = (point1+point2)*0.5f,
+                Dir = (point2-point1).normalized,
+            };
+            return ret;
+        }
+    }
+
+    public struct PointDir3 {
+        public Vector3 Point;
+        public Vector3 Dir;
+        public PointDir3(Vector3 point, Vector3 dir) {
+            Point = point;
+            Dir = dir;
+        }
+        public PointDir3 Reverse => new PointDir3(Point, -Dir);
+    }
+
+
+
 }

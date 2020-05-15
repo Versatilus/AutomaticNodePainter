@@ -53,6 +53,9 @@
       <HintPath>$(MangedDLLPath)\ICities.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="TrafficManager">
+      <HintPath>..\libs\TrafficManager.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>$(MangedDLLPath)\UnityEngine.dll</HintPath>
       <Private>False</Private>
@@ -74,14 +77,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutomaticNodePainterMod.cs" />
-    <Compile Include="Shapes\RoadBridgeWrapper.cs" />
-    <Compile Include="Shapes\RoadSideWrapper.cs" />
-    <Compile Include="Shapes\RoundAboutWrapper.cs" />
-    <Compile Include="Shapes\JunctionWrapper.cs" />
-    <Compile Include="Shapes\LWarapper.cs" />
+    <Compile Include="Shapes\Class1.cs" />
     <Compile Include="Shapes\NodeWrapper.cs" />
-    <Compile Include="Shapes\PathConnectWrapper.cs" />
-    <Compile Include="Shapes\RaboutSlice.cs" />
     <Compile Include="Shapes\SegmentWrapper.cs" />
     <Compile Include="TestsExperiments.cs" />
     <Compile Include="ThreadingExtension.cs" />

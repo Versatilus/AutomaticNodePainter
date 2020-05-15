@@ -6,21 +6,40 @@ namespace AutomaticNodePainter.Util {
     using UnityEngine;
     using ICities;
     using System.Diagnostics;
-    using CSUtil.Commons;
 
     public static class HelpersExtensions
     {
-        private static void CheckEnumWithFlags<T>() {
-            if (!typeof(T).IsEnum) {
-                throw new ArgumentException(string.Format("Type '{0}' is not an enum", typeof(T).FullName));
-            }
-            if (!Attribute.IsDefined(typeof(T), typeof(FlagsAttribute))) {
-                throw new ArgumentException(string.Format("Type '{0}' doesn't have the 'Flags' attribute", typeof(T).FullName));
-            }
+
+        public static T GetMaxEnumValue<T>() =>
+            System.Enum.GetValues(typeof(T)).Cast<T>().Max();
+
+        public static int GetEnumCount<T>() =>
+            System.Enum.GetValues(typeof(T)).Length;
+
+        internal static void Swap<T>(ref T a, ref T b){
+            T temp = a;
+            a = b;
+            b = temp;
+        }
+
+        internal static void Swap<T>(this T[] array, int index1, int index2) {
+            T temp = array[index1];
+            array[index1] = array[index2];
+            array[index2] = temp;
+        }
+
+        internal static void Swap<T>(this List<T> list, int index1, int index2) {
+            T temp = list[index1];
+            list[index1] = list[index2];
+            list[index2] = temp;
         }
 
         public static bool CheckFlags(this NetNode.Flags value, NetNode.Flags required, NetNode.Flags forbidden) {
-            return (value & (required|forbidden)) == required;
+            return (value & (required | forbidden)) == required;
+        }
+
+        public static bool CheckFlags(this NetSegment.Flags value, NetSegment.Flags required, NetSegment.Flags forbidden) {
+            return (value & (required | forbidden)) == required;
         }
 
 
